@@ -17,3 +17,6 @@ lint:
 	$(POETRY) run ruff check .
 
 check: lint test
+
+run:
+	$(POETRY) run uvicorn src.app.main:app --reload
