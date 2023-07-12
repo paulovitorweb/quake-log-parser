@@ -1,14 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import ORJSONResponse
 
-from src.constants import GAMES_LOG_PATH
 from src.app.schemas.game import GamesOut
 from src.app.schemas.healthcheck import HealthCheckOut
 from src.domain.service.parse_log import ParseLogService
 from src.domain.use_case.get_games import GetGamesUseCase
 from src.infra.log_reader.local_log_reader import LocalLogReader
+from src.constants import GAMES_LOG_PATH, PROJECT_VERSION, PROJECT_DESCRIPTION
 
-app = FastAPI()
+app = FastAPI(title="Quake log parser API", version=PROJECT_VERSION, description=PROJECT_DESCRIPTION)
 
 
 @app.get("/games/", response_model=GamesOut, status_code=200, response_class=ORJSONResponse)

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "quake-log-parser"
 version = "0.1.0"
-description = "A parser for the Quake game"
+description = "A parser for Quake 3 Arena game logs."
 authors = ["Paulo Freitas <paulogeo5@gmail.com>"]
 readme = "README.md"
 
