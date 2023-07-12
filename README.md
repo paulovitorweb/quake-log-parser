@@ -2,53 +2,121 @@
 
 ![Code coverage](./coverage.svg)
 
-## Task 1 - Construa um parser para o arquivo de log games.log e exponha uma API de consulta.
+Um parser escrito em Python para os logs do jogo Quake 3 Arena que fornece um relatório de cada partida.
 
-O arquivo games.log é gerado pelo servidor de quake 3 arena. Ele registra todas as informações dos jogos, quando um jogo começa, quando termina, quem matou quem, quem morreu pq caiu no vazio, quem morreu machucado, entre outros.
+## Como funciona
 
-O parser deve ser capaz de ler o arquivo, agrupar os dados de cada jogo, e em cada jogo deve coletar as informações de morte.
+A aplicação lê os logs do provider e analisa os eventos `InitGame` e `Kill` para extrair estatísticas da partida, quais sejam:
 
-### Exemplo
+- Total de kills da partida
+- Lista de jogadores
+- Kills por jogador
 
-      21:42 Kill: 1022 2 22: <world> killed Isgalamido by MOD_TRIGGER_HURT
-  
-  O player "Isgalamido" morreu pois estava ferido e caiu de uma altura que o matou.
+### Observações importantes
 
-      2:22 Kill: 3 2 10: Isgalamido killed Dono da Bola by MOD_RAILGUN
-  
-  O player "Isgalamido" matou o player Dono da Bola usando a arma Railgun.
-  
-Para cada jogo o parser deve gerar algo como:
+O jogador `<world>` não é listado entre os jogadores.
 
-    game_1: {
-        total_kills: 45;
-        players: ["Dono da bola", "Isgalamido", "Zeh"]
-        kills: {
-          "Dono da bola": 5,
-          "Isgalamido": 18,
-          "Zeh": 20
-        }
-      }
-  
+Sempre que um jogador é morto por `<world>`, perde 1 kill.
 
+O total de kills não é a soma de kills dos jogadores, e sim a contagem do total de eventos do tipo `Kill` na partida.
 
-### Observações
+Por `jogador`, entende-se aquele envolvido no evento `Kill`, seja porque matou ou porque foi morto. Ou seja, um jogador que entrou na partida mas não esteve envolvido nesse tipo de evento não é listado entre os jogadores da partida.
 
-1. Quando o `<world>` mata o player ele perde -1 kill.
-2. `<world>` não é um player e não deve aparecer na lista de players e nem no dicionário de kills.
-3. `total_kills` são os kills dos games, isso inclui mortes do `<world>`.
+## Como executar a aplicação
 
-## Task 2 - Após construir o parser construa uma API que faça a exposição de um método de consulta que retorne um relatório de cada jogo.
+Há duas maneiras de executar a aplicação: construindo a imagem via Docker ou executando via Python na máquina.
 
+### Docker
 
-# Requisitos
+Construa a imagem a partir da fonte:
 
-1. Use uma das três linguagens: Node.js, Java ou Python
-2. As APIs deverão seguir o modelo RESTFul com formato JSON  
-3. Faça testes unitários, suite de testes bem organizados. (Dica. De uma atenção especial a esse item!)
-4. Use git e tente fazer commits pequenos e bem descritos.
-5. Faça pelo menos um README explicando como fazer o setup, uma explicação da solução proposta, o mínimo de documentação para outro desenvolvedor entender seu código
-6. Siga o que considera boas práticas de programação, coisas que um bom desenvolvedor olhe no seu código e não ache "feio" ou "ruim".
-7. Após concluir o teste suba em um repositório privado e nos mande o link
+```
+$ make docker-build
+```
 
-HAVE FUN :)
+Execute a aplicação dentro do container:
+
+```
+$ make docker-run
+```
+
+Para acessar e interagir com a API, vá até 127.0.0.1:8000/docs.
+
+### Executando na máquina
+
+Para executar direto na máquina local, você vai precisar de:
+
+- Python >= 3.11
+- GNU Make
+
+Crie e ative um ambiente virtual:
+
+```
+$ python -m venv venv
+$ source venv/bin/activate
+```
+
+Atualize o pip e instale o poetry:
+
+```
+$ pip install --upgrade pip
+$ pip install poetry
+```
+
+Instale as dependências do projeto:
+
+```
+$ make install
+```
+
+Por fim, execute a aplicação:
+
+```
+$ make run
+```
+
+Se tudo correu bem, você poderá acessar 127.0.0.1:8000/docs.
+
+## Testes
+
+Há três conjuntos de testes que podem ser encontrados na pasta `tests`. São eles:
+
+- unitários: testam pequenas unidades de código, isolando-as de dependências externas (como a leitura do arquivo de logs);
+- de integração: testam as integrações do sistema com dependências externas, como o arquivo de logs;
+- end-to-end: testam a API, verificando se as chamadas aos endpoints têm o retorno esperado dentro de cada cenário.
+
+Os testes podem ser executados com:
+
+```
+$ make test
+```
+
+Esse comando também tem como output o relatório de cobertura do código com `pytest-cov`, além de atualizar o `coverage.svg`.
+
+## Lint
+
+Para manter um padrão de escrita do código, é utilizado o `ruff` como linter.
+
+Execute-o com:
+
+```
+$ make lint
+```
+
+## Asyncio
+
+Esta aplicação implementa simultaneidade baseada em corrotina com `asyncio`. Isso significa que o código é executado de maneira concorrente, através do que se chama de multitarefa cooperativa. 
+
+Na prática, a API consegue tratar mais de um requisição "ao mesmo tempo", mesmo utilizando apenas um worker. Com isso, conseguimos aproveitar de forma mais eficiente os recursos da máquina para operações baseadas em I/O, como é o caso da leitura de arquivos de log.
+
+Para alcançar isso, é importante garantir que operações de I/O bloqueantes passem longe da aplicação. Por isso, ao contribuir com o projeto, certifique-se de usar bibliotecas que implementam operações de I/O não bloqueantes, como a `aiofiles` para leitura de arquivos, `httpx` ou `aiohttp` para clientes http, `fastapi` para servidores web, etc.
+
+### Suíte de testes assíncronos
+
+A suíte de testes assíncronos foi construída com:
+
+- pytest
+- pytest-mock: que oferece uma fixture com recursos de mock do módulo unittest do Python
+- httpx: para um cliente de testes com suporte a requisições http assíncronas
+- asgi-lifespan: para encapsular o app FastAPI dentro de um lifespan
+- pytest-asyncio: para testar código assíncrono com pytest
