@@ -28,7 +28,12 @@ Há duas maneiras de executar a aplicação: construindo a imagem via Docker ou 
 
 ### Docker
 
-Construa a imagem a partir da fonte:
+Para construir a imagem a partir da fonte, você vai precisar de:
+
+- Docker
+- GNU Make
+
+Execute o build:
 
 ```
 $ make docker-build
@@ -40,7 +45,7 @@ Execute a aplicação dentro do container:
 $ make docker-run
 ```
 
-Para acessar e interagir com a API, vá até 127.0.0.1:8000/docs.
+Para acessar e interagir com a API, vá até [127.0.0.1:8000/docs](127.0.0.1:8000/docs).
 
 ### Executando na máquina
 
@@ -75,7 +80,7 @@ Por fim, execute a aplicação:
 $ make run
 ```
 
-Se tudo correu bem, você poderá acessar 127.0.0.1:8000/docs.
+Se tudo correu bem, você poderá acessar [127.0.0.1:8000/docs](127.0.0.1:8000/docs).
 
 ## Testes
 
