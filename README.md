@@ -1,6 +1,6 @@
 # Quake log parser
 
-![Code coverage](./coverage.svg)
+![Code coverage](./coverage.svg) ![Test workflow](https://github.com/paulovitorweb/quake-log-parser/actions/workflows/test.yml/badge.svg)
 
 Um parser escrito em Python para os logs do jogo Quake 3 Arena que fornece um relatório de cada partida.
 
