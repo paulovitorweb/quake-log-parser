@@ -108,6 +108,17 @@ Execute-o com:
 $ make lint
 ```
 
+## API
+
+Para acionar e expor os resultados do parse, foi implementada uma api assíncrona com `FastAPI` e `Uvicorn`.
+
+Para visualizar a documentação da API, que segue a especificação OpenAPI, você pode acessar os seguintes links:
+
+- 127.0.0.1:8000/docs: para uma documentação interativa;
+- 127.0.0.1:8000/redoc: melhor para leitura e apresentação.
+
+A API expõe ainda um endpoint de health check em `/healthcheck`.
+
 ## Asyncio
 
 Esta aplicação implementa simultaneidade baseada em corrotina com `asyncio`. Isso significa que o código é executado de maneira concorrente, através do que se chama de multitarefa cooperativa. 
@@ -120,8 +131,8 @@ Para alcançar isso, é importante garantir que operações de I/O bloqueantes p
 
 A suíte de testes assíncronos foi construída com:
 
-- pytest
-- pytest-mock: que oferece uma fixture com recursos de mock do módulo unittest do Python
-- httpx: para um cliente de testes com suporte a requisições http assíncronas
-- asgi-lifespan: para encapsular o app FastAPI dentro de um lifespan
-- pytest-asyncio: para testar código assíncrono com pytest
+- pytest;
+- pytest-mock: que oferece uma fixture com recursos de mock do módulo unittest do Python;
+- httpx: para um cliente de testes com suporte a requisições http assíncronas;
+- asgi-lifespan: para encapsular o app FastAPI dentro de um lifespan;
+- pytest-asyncio: para testar código assíncrono com pytest.
