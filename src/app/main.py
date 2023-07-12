@@ -20,7 +20,7 @@ async def get_games():
     try:
         result = await use_case.exec()
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="file not found")
+        raise HTTPException(status_code=500, detail="internal server error")
 
     return ORJSONResponse(result)
 
