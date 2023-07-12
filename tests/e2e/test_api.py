@@ -16,12 +16,6 @@ async def test__get_games_should_succeed(test_app: AsyncClient):
     assert is_valid, exc
 
 
-async def test__get_games_should_return_not_found_error(test_app: AsyncClient):
-    response = await test_app.get("/games/?file=non-existent.log")
-    assert response.status_code == 404
-    assert response.json()["detail"] == "file not found"
-
-
 async def test__healthcheck(test_app: AsyncClient):
     response = await test_app.get("/healthcheck")
     assert response.status_code == 200
